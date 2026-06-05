@@ -74,9 +74,10 @@ Desktop.ini
 checkpoints/*.pt
 checkpoints/*.pth
 !checkpoints/.gitkeep
-
+checkpoints/code
 # Training data
 data/text_data/*.txt
+data/code_data/
 !data/text_data/.gitkeep
 data_cache/
 

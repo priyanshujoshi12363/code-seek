@@ -27,7 +27,7 @@ def clean_text(text):
 def chat():
     tokenizer = Tokenizer.from_file(TOKENIZER_PATH)
     
-    model_path = f'{CHECKPOINT_DIR}/step_15000.pt'
+    model_path = f'{CHECKPOINT_DIR}/code/code_step_1000.pt'
     if not os.path.exists(model_path):
         model_path = f'{CHECKPOINT_DIR}/best_model.pt'
     if not os.path.exists(model_path):

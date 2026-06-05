@@ -56,7 +56,7 @@ def resume():
     scaler = torch.amp.GradScaler('cuda')
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     
-    ckpt = torch.load(f'{CHECKPOINT_DIR}/step_18000.pt', map_location='cpu')
+    ckpt = torch.load(f'{CHECKPOINT_DIR}/step_25000.pt', map_location='cpu')
     model.load_state_dict(ckpt['model_state_dict'])
     optimizer.load_state_dict(ckpt['optimizer_state_dict'])
     start_step = ckpt['step']
