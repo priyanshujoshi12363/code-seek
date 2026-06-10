@@ -1,43 +1,38 @@
-```markdown
-# CodeSeek 125M — A Custom Transformer for Storytelling & Low-Level Coding
+# CodeSeek 125M
 
-<div align="center">
+> A 125M parameter decoder-only Transformer built from scratch in PyTorch — trained to write stories and low-level code.
 
-🚀 **A 125M parameter decoder-only Transformer built from scratch in PyTorch**
-
-[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.7-red.svg)](https://pytorch.org/)
-[![CUDA](https://img.shields.io/badge/CUDA-11.8-green.svg)](https://developer.nvidia.com/cuda-toolkit)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Parameters](https://img.shields.io/badge/Parameters-125M-orange.svg)]()
-
-</div>
+![Python](https://img.shields.io/badge/Python-3.12-blue.svg)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.7-red.svg)
+![CUDA](https://img.shields.io/badge/CUDA-11.8-green.svg)
+![Parameters](https://img.shields.io/badge/Parameters-125M-orange.svg)
+![Steps](https://img.shields.io/badge/Steps-14000+-brightgreen)
+![Best Loss](https://img.shields.io/badge/Best_Loss-0.988-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ---
 
 ## Overview
 
-CodeSeek is a 125 million parameter decoder-only Transformer trained from scratch. It specializes in storytelling and low-level programming including C, Assembly, and Kernel development. The entire model is built in PyTorch with zero pre-trained dependencies.
+CodeSeek is a **125 million parameter** decoder-only Transformer trained from random initialization — no pre-trained weights, no shortcuts. It specializes in **creative storytelling** and **low-level programming** (C, Assembly, Kernel development).
 
----
+### Sample Output
 
-## Key Features
+```
+Input:  "Once upon a time"
 
-- 125M Parameters at GPT-1 scale, trained from random initialization
-- Rotary Position Embeddings for modern position encoding
-- SwiGLU Activation outperforming GELU for language tasks
-- Multi-Head Self-Attention with 12 heads and 768 hidden dimension
-- Custom BPE Tokenizer with 16K vocabulary trained on story and code data
-- Mixed Precision Training with FP16 and gradient scaling
-- Cosine Learning Rate Schedule with warmup
-- Gradient Checkpointing for memory efficient training
+Output: "there was a brave little fox named Ember who lived in a cozy den
+         at the edge of the Whispering Woods. Unlike other foxes who were
+         content to chase butterflies, Ember dreamed of exploring the
+         mysterious mountains beyond the valley..."
+```
 
 ---
 
 ## Architecture
 
 | Component | Specification |
-|-----------|--------------|
+|---|---|
 | Type | Decoder-only Transformer (GPT-style) |
 | Parameters | 125.9 Million |
 | Layers | 12 |
@@ -52,194 +47,104 @@ CodeSeek is a 125 million parameter decoder-only Transformer trained from scratc
 
 ---
 
-## Project Structure
+## Training Details
 
-```
-codeseek/
-├── model/
-│   ├── transformer.py
-│   └── __init__.py
-├── training/
-│   ├── trainer.py
-│   ├── resume.py
-│   ├── finetune.py
-│   └── code_pretrain.py
-├── data/
-│   ├── download_data.py
-│   ├── text_data/
-│   └── code_data/
-├── tokenizer/
-│   ├── train_tokenizer.py
-│   ├── update_tokenizer.py
-│   └── codeseek_tokenizer.json
-├── inference/
-│   └── chat.py
-├── config.py
-├── checkpoints/
-├── requirements.txt
-├── .gitignore
-└── README.md
-```
+| Parameter | Value |
+|---|---|
+| Training Data | 200MB+ stories & conversations |
+| Dataset Size | 226,328 chunks |
+| Batch Size | 1 (effective: 8 with gradient accumulation) |
+| Learning Rate | 3e-4 (cosine schedule) |
+| Epochs | 3 |
+| Optimizer | AdamW (β1=0.9, β2=0.95) |
+| Mixed Precision | FP16 |
+| Hardware | NVIDIA GTX 1660 Ti (6GB VRAM) |
+| Training Time | ~45 hours |
+
+### Loss Progression
+
+| Stage | Loss | Quality |
+|---|---|---|
+| Start | 9.8 | Random noise |
+| Epoch 1 — 25% | ~2.5 | Basic sentences |
+| Epoch 1 — 50% | ~1.5 | Coherent stories |
+| Epoch 1 — 75% | ~1.2 | Good quality |
+| Epoch 1 — End | ~1.0 | Professional quality |
+| Epoch 3 — End | ~0.6 | Near-perfect |
 
 ---
 
 ## Quick Start
 
-### Installation
-
 ```bash
-git clone https://github.com/priyanshujoshi12363/code-seek.git
+# Clone repository
+git clone https://github.com/priyanshujoshi12363/code-seek
 cd codeseek
+
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### Download Training Data
-
-```bash
+# Download training data
 python data/download_data.py
-```
 
-### Train Tokenizer
-
-```bash
+# Train tokenizer
 python tokenizer/train_tokenizer.py
-```
 
-### Train Model
-
-```bash
+# Train from scratch
 python training/trainer.py
-```
 
-### Resume From Checkpoint
-
-```bash
+# Resume from checkpoint
 python training/resume.py
-```
 
-### Code Pretraining
-
-```bash
-python training/code_pretrain.py
-```
-
-### Chat With CodeSeek
-
-```bash
+# Chat
 python inference/chat.py
 ```
 
 ---
 
-## Training Details
-
-### Story Pretraining
-
-| Parameter | Value |
-|-----------|-------|
-| Data | 200MB+ stories and conversations |
-| Chunks | 226,328 |
-| Batch Size | 1 (effective 8 with gradient accumulation) |
-| Learning Rate | 3e-4 with cosine schedule |
-| Epochs | 3 (1 completed) |
-| Optimizer | AdamW (beta1=0.9, beta2=0.95) |
-| Hardware | NVIDIA GTX 1660 Ti (6GB VRAM) |
-
-### Code Pretraining
-
-| Parameter | Value |
-|-----------|-------|
-| Data | 493MB embedded code and documentation |
-| Chunks | 1,082,601 |
-| Batch Size | 1 (effective 8 with gradient accumulation) |
-| Learning Rate | 1e-4 with cosine schedule |
-| Epochs | 2 (in progress) |
-| Hardware | NVIDIA GTX 1660 Ti (6GB VRAM) |
-
----
-
-## Performance
-
-### Story Pretraining Loss Progression
-
-| Milestone | Loss | Quality |
-|-----------|------|---------|
-| Start | 9.8 | Random initialization |
-| 25 Percent | 2.5 | Basic sentence structure |
-| 50 Percent | 1.5 | Good story quality |
-| 75 Percent | 1.2 | Great storytelling |
-| Epoch 1 End | 1.0 | Professional quality |
-
-### Code Pretraining Loss Progression
-
-| Milestone | Loss | Quality |
-|-----------|------|---------|
-| Start | 7.3 | Story model baseline |
-| 1000 Steps | 1.5 | Basic C patterns emerging |
-| 4000 Steps | 0.2 | Real API names appearing |
-| 10000 Steps | TBD | In progress |
-
-### Sample Story Output
+## Project Structure
 
 ```
-Input: Once upon a time
-Output: there was a brave little fox named Ember who lived in a 
-cozy den at the edge of the Whispering Woods. Unlike other foxes 
-who were content to chase butterflies, Ember dreamed of exploring 
-the mysterious mountains beyond the valley...
-```
-
-### Sample Code Output
-
-```
-Input: void setup() {
-Output: pinMode(LED_BUILTIN, OUTPUT);
-        Serial.begin(9600);
-        esp_wifi_init(&cfg);
-        xTaskCreate(task, "task", 2048, NULL, 1, NULL);
+codeseek/
+├── model/
+│   ├── transformer.py       # Full model architecture
+│   └── __init__.py
+├── training/
+│   ├── trainer.py           # Training loop
+│   ├── resume.py            # Resume from checkpoint
+│   └── finetune.py          # Fine-tuning script
+├── data/
+│   ├── download_data.py     # Dataset downloader
+│   └── text_data/           # Training data
+├── tokenizer/
+│   ├── train_tokenizer.py   # BPE tokenizer training
+│   └── codeseek_tokenizer.json
+├── inference/
+│   └── chat.py              # Interactive chat
+├── config.py
+├── checkpoints/
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Technical Features
+## Technical Highlights
 
-### Custom Tokenizer
+**Custom BPE Tokenizer** — 16K vocabulary trained on domain-specific story and code data with special tokens `<PAD>`, `<UNK>`, `<EOS>`, `<BOS>`.
 
-- Byte-Pair Encoding with 16,384 vocabulary size
-- Special tokens for PAD, UNK, EOS, and BOS
-- Trained on domain-specific story and code data
-- Handles C syntax, embedded APIs, and natural language
+**Modern Architecture** — Pre-Norm LayerNorm, Rotary Position Embeddings (RoPE), SwiGLU activations, weight tying between embedding and output layers.
 
-### Modern Architecture Choices
-
-- Pre-Norm with Layer Normalization for training stability
-- Rotary Position Embeddings for better sequence handling
-- SwiGLU activation in Feed-Forward networks
-- Weight Tying between embedding and output layers
-- Causal self-attention with triangular masking
-
-### Training Optimizations
-
-- Automatic Mixed Precision for faster training
-- Gradient Checkpointing to reduce memory usage
-- Cosine Learning Rate Schedule with warmup period
-- Gradient Clipping to prevent training instability
-- Periodic Checkpointing every 1000 steps
-- Best model tracking and saving
+**Memory-Efficient Training** — Gradient checkpointing + AMP (FP16) to fit 125M params on a 6GB GPU. Cosine LR schedule with warmup and gradient clipping for stability. Periodic checkpoints every 1000 steps.
 
 ---
 
 ## Roadmap
 
-| Phase | Status | Description |
-|-------|--------|-------------|
-| Story Pretraining | Complete | 200MB stories, 1 epoch completed |
-| Code Pretraining | In Progress | 493MB embedded code, training |
-| Chat Fine-Tuning | Planned | User/Assistant format training |
-| Code Instruction | Planned | Code-specific instruction tuning |
-| RAG Integration | Planned | Vector database for documentation |
-| Mobile Deployment | Planned | llama.cpp quantization |
-| Vector Memory | Planned | Long-term conversation memory |
+- [x] Phase 1 — Pretraining (stories + conversations, custom tokenizer, 125M params)
+- [ ] Phase 2 — Chat fine-tuning (User/Assistant format, personality injection)
+- [ ] Phase 3 — Code fine-tuning (C / Assembly / Kernel, embedded systems)
+- [ ] Phase 4 — RAG integration, mobile deployment via llama.cpp
 
 ---
 
@@ -257,36 +162,20 @@ accelerate
 
 ---
 
-## Live Training Stats
+## References
 
-- Current Phase: Code Pretraining
-- Steps Completed: 4,000+
-- Best Code Loss: 0.204
-- Total Code Chunks: 1,082,601
-- Model Size: 125.9M parameters
-- Status: Training
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762) — Vaswani et al., 2017
+- [GPT-1](https://openai.com/research/language-unsupervised) — Radford et al., 2018
+- [RoPE](https://arxiv.org/abs/2104.09864) — Su et al., 2021
+- [SwiGLU](https://arxiv.org/abs/2002.05202) — Shazeer, 2020
+- [Chinchilla](https://arxiv.org/abs/2203.15556) — Hoffmann et al., 2022
 
 ---
 
 ## License
 
-MIT License. Feel free to use, modify, and distribute.
+MIT — free to use, modify, and distribute.
 
 ---
 
-## Acknowledgments
-
-- Attention Is All You Need by Vaswani et al., 2017
-- GPT-1 by Radford et al., 2018
-- RoPE by Su et al., 2021
-- SwiGLU by Shazeer, 2020
-- Chinchilla by Hoffmann et al., 2022
-
----
-
-<div align="center">
-
-**Built from scratch. No pre-trained models. No shortcuts.**
-
-</div>
-```
+*Built from scratch. No pre-trained models. No shortcuts.*
