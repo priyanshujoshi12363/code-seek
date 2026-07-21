@@ -69,7 +69,7 @@ Desktop.ini
 
 # macOS
 .DS_Store
-
+.claude
 # Model checkpoints (too large for GitHub)
 checkpoints/*.pt
 checkpoints/*.pth
@@ -103,3 +103,6 @@ wandb/
 # Large files (>100MB)
 *.bin
 *.safetensors
+
+wheels/
+checkpoints/

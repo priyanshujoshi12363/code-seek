@@ -18,41 +18,65 @@ def load_model(path):
     return model
 
 def clean_text(text):
+    text = text.replace('U ser :', '')
+    text = text.replace('A ss ist ant :', '')
+    text = text.replace('Bot :', '')
+    text = text.replace('User:', '')
+    text = text.replace('Assistant:', '')
+    text = text.replace('Bot:', '')
     text = text.replace('Ġ', ' ')
     text = text.replace('Ċ', '\n')
-    text = text.replace('ĉ', '')
     text = ' '.join(text.split())
     return text.strip()
 
 def chat():
     tokenizer = Tokenizer.from_file(TOKENIZER_PATH)
     
-    model_path = f'{CHECKPOINT_DIR}/code/code_step_1000.pt'
-    if not os.path.exists(model_path):
-        model_path = f'{CHECKPOINT_DIR}/best_model.pt'
-    if not os.path.exists(model_path):
-        print(f"Model not found")
+    model_paths = [
+        'checkpoints/knoc8-Chat-v3.pt',
+        'checkpoints/knoc8_chat_v3/epoch_5.pt',
+        'checkpoints/knoc8_chat_v3/best_model.pt',
+        'checkpoints/knoc8.pt',
+    ]
+    
+    model_path = None
+    for path in model_paths:
+        if os.path.exists(path):
+            model_path = path
+            break
+    
+    if model_path is None:
+        print("No model found!")
         return
     
+    print(f"Loaded: {model_path}")
     model = load_model(model_path)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     
-    print("CodeSeek ready. Type 'quit' to exit.\n")
+    print("\n" + "=" * 50)
+    print("knoc8 - Your AI Storyteller & Chat Assistant")
+    print("Type 'quit' to exit")
+    print("=" * 50 + "\n")
     
     while True:
-        user = input("You: ")
-        if user.lower() == 'quit':
+        user_input = input("You: ")
+        if user_input.lower() == 'quit':
+            print("\nknoc8: Catch you later! Come back for more stories! ✨")
             break
         
-        tokens = tokenizer.encode(user).ids
+        prompt = f"User: {user_input}\nAssistant:"
+        tokens = tokenizer.encode(prompt).ids
         tokens = torch.tensor([tokens], dtype=torch.long).to(device)
         
-        output = model.generate(tokens, max_new_tokens=150, temperature=0.8, top_k=50)
+        output = model.generate(tokens, max_new_tokens=200, temperature=0.8, top_k=50)
         output_tokens = output[0].cpu().tolist()
         response = tokenizer.decode(output_tokens)
         response = clean_text(response)
         
-        print(f"Bot: {response}\n")
+        if not response or len(response) < 5:
+            response = "Let me think of a good story for you! What kind would you like?"
+        
+        print(f"knoc8: {response}\n")
 
 if __name__ == "__main__":
     chat()

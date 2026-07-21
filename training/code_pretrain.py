@@ -41,7 +41,7 @@ def code_pretrain():
     
     model = CodeSeek(VOCAB_SIZE, D_MODEL, N_HEADS, N_LAYERS, FFN_DIM, MAX_SEQ_LEN, DROPOUT)
     
-    resume_path = 'checkpoints/code/code_step_1000.pt'
+    resume_path = 'checkpoints/code/code_step_4000.pt'
     
     if os.path.exists(resume_path):
         print(f"Resuming from: {resume_path}")
